@@ -61,11 +61,11 @@
 - name: Issue SSL certificate via DNS-01 (Only if missing)
   ansible.builtin.command:
     cmd: >
-      certbot certonly --dns-cloudflare 
-      --dns-cloudflare-credentials /root/.secrets/cloudflare.ini 
-      -d {{ doh_domain }} 
-      --email undermine.support@gmail.com 
-      --agree-tos --non-interactive 
+      certbot certonly --dns-cloudflare
+      --dns-cloudflare-credentials /root/.secrets/cloudflare.ini
+      -d {{ doh_domain }}
+      --email undermine.support@gmail.com
+      --agree-tos --non-interactive
       --dns-cloudflare-propagation-seconds 20
   args:
     creates: /etc/letsencrypt/live/{{ doh_domain }}/fullchain.pem

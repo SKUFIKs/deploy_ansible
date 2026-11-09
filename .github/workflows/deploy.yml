@@ -2,8 +2,8 @@ name: Run Ansible Playbook
 
 on:
   push:
-    branches: [ "main" ]  
-  workflow_dispatch:    
+    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   lint:
@@ -59,7 +59,7 @@ jobs:
         run: |
           mkdir -p roles/doh/files
           echo "${{ secrets.DNSMASQ_SPOOF_LIST }}" > roles/doh/files/spoof.conf
-          
+
       - name: Run Ansible Playbook
         run: |
           ansible-playbook -i inventory.ini playbook.yml -e "cloudflare_token=${{ secrets.CF_API_TOKEN }} doh_domain=${{ secrets.DOH_DOMAIN }}"

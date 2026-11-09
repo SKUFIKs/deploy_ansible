@@ -35,12 +35,12 @@ stream {
     resolver_timeout 5s;
 
     map $ssl_preread_server_name $backend_pool {
-        hostnames; 
+        hostnames;
         {{ doh_domain }}        127.0.0.1:10443;
-        *.undermine.click       127.0.0.1:10443; 
-        undermine.click         127.0.0.1:10443; 
-        ~^$                     127.0.0.1:10443; 
-        default                 $ssl_preread_server_name:443; 
+        *.undermine.click       127.0.0.1:10443;
+        undermine.click         127.0.0.1:10443;
+        ~^$                     127.0.0.1:10443;
+        default                 $ssl_preread_server_name:443;
     }
 
     server {

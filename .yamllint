@@ -1,5 +1,6 @@
 ---
 # Конфигурация yamllint: проверяет сам YAML (отступы, пробелы, кавычки).
+# Настройки совместимы с требованиями ansible-lint к .yamllint.
 extends: default
 
 ignore: |
@@ -11,5 +12,12 @@ rules:
   document-start: disable
   comments:
     min-spaces-from-content: 1
+  comments-indentation: false
+  braces:
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+  octal-values:
+    forbid-implicit-octal: true
+    forbid-explicit-octal: true
   truthy:
     allowed-values: ['true', 'false', 'yes', 'no']

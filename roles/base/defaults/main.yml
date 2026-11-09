@@ -1,7 +1,7 @@
 ---
 required_packages:
   - curl
-  - git 
+  - git
   - htop
   - ufw
   - fail2ban
