@@ -1,0 +1,16 @@
+---
+# Конфигурация ansible-lint: проверяет не только синтаксис, но и типичные
+# ошибки Ansible (FQCN, changed_when, права на файлы и т.д.).
+profile: basic
+
+exclude_paths:
+  - .github/
+  - roles/doh/files/
+
+# Пока не валим сборку на этих правилах — сначала просто показываем их в логе.
+warn_list:
+  - no-changed-when
+  - risky-file-permissions
+  - command-instead-of-module
+  - name[template]
+  - yaml[line-length]

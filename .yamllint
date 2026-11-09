@@ -1,0 +1,15 @@
+---
+# Конфигурация yamllint: проверяет сам YAML (отступы, пробелы, кавычки).
+extends: default
+
+ignore: |
+  .github/
+  roles/doh/files/
+
+rules:
+  line-length: disable
+  document-start: disable
+  comments:
+    min-spaces-from-content: 1
+  truthy:
+    allowed-values: ['true', 'false', 'yes', 'no']

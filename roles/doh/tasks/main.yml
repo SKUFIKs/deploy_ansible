@@ -3,6 +3,7 @@
   ansible.builtin.apt:
     name:
       - nginx
+      - libnginx-mod-stream
       - dnsmasq
       - git
       - golang-go
@@ -55,6 +56,7 @@
     owner: root
     group: root
   check_mode: no
+  no_log: true
 
 - name: Issue SSL certificate via DNS-01 (Only if missing)
   ansible.builtin.command:
@@ -115,6 +117,11 @@
     dest: /etc/nginx/sites-enabled/{{ doh_domain }}
     state: link
   notify: restart nginx
+
+- name: Validate Nginx configuration
+  ansible.builtin.command:
+    cmd: nginx -t
+  changed_when: false
 
 - name: Allow HTTP and HTTPS in UFW
   community.general.ufw:
