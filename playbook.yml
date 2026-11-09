@@ -1,0 +1,6 @@
+---
+- name: Basic server configuration
+  hosts: all
+  become: yes
+  roles:
+    - base
