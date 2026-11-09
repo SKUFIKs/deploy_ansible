@@ -25,6 +25,7 @@ jobs:
           mkdir -p ~/.ssh
           echo "Host *" >> ~/.ssh/config
           echo "  StrictHostKeyChecking no" >> ~/.ssh/config
+          echo "  ConnectionAttempts 3" >> ~/.ssh/config
           
       - name: Run Ansible Playbook
         run: |
