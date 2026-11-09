@@ -87,7 +87,7 @@
 
 - name: Copy DoH-server config
   ansible.builtin.template:
-    src: doh-server.conf
+    src: doh-server.conf.j2
     dest: /etc/dns-over-https/doh-server.conf
   notify: restart doh-server
 
