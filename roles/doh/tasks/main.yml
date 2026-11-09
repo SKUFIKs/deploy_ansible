@@ -85,15 +85,27 @@
     dest: /etc/dnsmasq.d/spoof.conf
   notify: restart dnsmasq
 
+- name: Ensure DoH-server config directory exists
+  ansible.builtin.file:
+    path: /etc/dns-over-https
+    state: directory
+    mode: '0755'
+
 - name: Copy DoH-server config
   ansible.builtin.template:
     src: doh-server.conf.j2
     dest: /etc/dns-over-https/doh-server.conf
   notify: restart doh-server
 
-- name: Copy Nginx virtual host
+- name: Copy main Nginx config (stream/L4 + http)
   ansible.builtin.template:
     src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+  notify: restart nginx
+
+- name: Copy Nginx virtual host
+  ansible.builtin.template:
+    src: nginx-site.conf.j2
     dest: /etc/nginx/sites-available/{{ doh_domain }}
   notify: restart nginx
 
@@ -104,12 +116,20 @@
     state: link
   notify: restart nginx
 
-- name: Allow HTTP, HTTPS and DNS in UFW
+- name: Allow HTTP and HTTPS in UFW
   community.general.ufw:
     rule: allow
     port: "{{ item }}"
     proto: tcp
-  loop: 
+  loop:
     - '80'
     - '443'
-    - '53'
+
+- name: Allow DNS (TCP and UDP) in UFW
+  community.general.ufw:
+    rule: allow
+    port: '53'
+    proto: "{{ item }}"
+  loop:
+    - tcp
+    - udp
