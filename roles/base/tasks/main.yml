@@ -26,7 +26,7 @@
   notify: restart sshd
 
 - name: Disable password authentication
-  ansible.bultin.linefile:
+  ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     regexp: '^#?PasswordAuthentication\s+'
     line: "PasswordAuthentication no"
@@ -34,8 +34,8 @@
     validate: sshd -t -f %s
   notify: restart sshd
 
-- name: Disable root authentication
-  ansible.bultin.linefile:
+- name: Disable root SSH login
+  ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     regexp: '^#?PermitRootLogin\s+'
     line: "PermitRootLogin no"
