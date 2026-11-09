@@ -4,3 +4,6 @@ required_packages:
   - git 
   - htop
   - ufw
+  - fail2ban
+
+custom_ssh_port: "2222"

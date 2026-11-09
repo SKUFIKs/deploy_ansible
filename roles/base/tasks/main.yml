@@ -4,3 +4,62 @@
     name: "{{ required_packages }}"
     state: present
     update_cache: yes
+
+- name: Allow custom SSH port in UFW
+  community.general.ufw:
+    rule: allow
+    port: "{{ custom_ssh_port }}"
+    proto: tcp
+
+- name: Enable UFW with default deny incoming
+  community.general.ufw:
+    state: enabled 
+    default: deny
+
+- name: Change SSH port
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?Port\s+'
+    line: "Port {{ custom_ssh_port }}"
+    state: present
+    validate: sshd -t -f %s
+  notify: restart sshd
+
+- name: Disable password authentication
+  ansible.bultin.linefile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PasswordAuthentication\s+'
+    line: "PasswordAuthentication no"
+    state: present
+    validate: sshd -t -f %s
+  notify: restart sshd
+
+- name: Disable root authentication
+  ansible.bultin.linefile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PermitRootLogin\s+'
+    line: "PermitRootLogin no"
+    state: present
+    validate: sshd -t -f %s
+  notify: restart sshd
+
+- name: Configure Fail2Ban for custom SSH port
+  ansible.bultin.copy:
+    dest: /etc/fail2ban/jail.local
+    content: |
+      [sshd]
+      enabled = true
+      port = {{ custom_ssh_port }}
+      filter = sshd
+      logpath = /var/log/auth.log
+      maxretry = 3
+      bantime = 3600
+      findtime = 600
+    mode: 0644
+  notify: restart fail2ban
+
+- name: Enable and start Fail2Ban
+  ansible.builtin.service:
+    name: fail2ban
+    state: started
+    enabled: yes
