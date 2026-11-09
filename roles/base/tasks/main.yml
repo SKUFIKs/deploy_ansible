@@ -44,7 +44,7 @@
   notify: restart sshd
 
 - name: Configure Fail2Ban for custom SSH port
-  ansible.bultin.copy:
+  ansible.builtin.copy:
     dest: /etc/fail2ban/jail.local
     content: |
       [sshd]
