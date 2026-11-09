@@ -1,12 +1,38 @@
 ---
-- name: Install Nginx, dnsmasq and doh-server
+---
+- name: Install Nginx, dnsmasq and build dependencies for DoH
   ansible.builtin.apt:
-    name: 
+    name:
       - nginx
       - dnsmasq
-      - dns-over-https
+      - git
+      - golang-go
+      - make
     state: present
     update_cache: yes
+
+- name: Clone m13253/dns-over-https repository
+  ansible.builtin.git:
+    repo: 'https://github.com/m13253/dns-over-https.git'
+    dest: /tmp/dns-over-https
+    version: v2.3.10
+    force: yes
+  when: not ansible_check_mode
+
+- name: Build and install doh-server from source
+  ansible.builtin.command:
+    cmd: make install
+    chdir: /tmp/dns-over-https
+    creates: /usr/local/bin/doh-server
+  notify:
+    - reload systemd
+    - restart doh-server
+
+- name: Clean up temporary source directory
+  ansible.builtin.file:
+    path: /tmp/dns-over-https
+    state: absent
+    
 - name: Install Certbot and Cloudflare DNS plugin
   ansible.builtin.apt:
     name:
