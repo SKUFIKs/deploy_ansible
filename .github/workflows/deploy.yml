@@ -21,8 +21,7 @@ jobs:
 
       - name: Prepare Inventory and SSH Config
         run: |
-          sed -i 's/__HOST__/${{ secrets.SSH_HOST }}/g' inventory.ini
-          sed -i 's/__USER__/${{ secrets.SSH_USER }}/g' inventory.ini
+          echo "${{ secrets.ANSIBLE_INVENTORY }}" > inventory.ini
           mkdir -p ~/.ssh
           echo "Host *" >> ~/.ssh/config
           echo "  StrictHostKeyChecking no" >> ~/.ssh/config
