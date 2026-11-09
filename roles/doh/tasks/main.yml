@@ -40,6 +40,12 @@
     state: present
     update_cache: yes
 
+- name: Ensure .secrets directory exists
+  ansible.builtin.file:
+    path: /root/.secrets
+    state: directory
+    mode: '0700'
+
 - name: Create Cloudflare credentials file
   ansible.builtin.copy:
     dest: /root/.secrets/cloudflare.ini
@@ -49,12 +55,6 @@
     owner: root
     group: root
   check_mode: no
-
-- name: Ensure .secrets directory exists
-  ansible.builtin.file:
-    path: /root/.secrets
-    state: directory
-    mode: '0700'
 
 - name: Issue SSL certificate via DNS-01 (Only if missing)
   ansible.builtin.command:
