@@ -62,13 +62,13 @@
       certbot certonly --dns-cloudflare 
       --dns-cloudflare-credentials /root/.secrets/cloudflare.ini 
       -d {{ doh_domain }} 
-      --email undermine.support@gmail.com
+      --email undermine.support@gmail.com 
       --agree-tos --non-interactive 
       --dns-cloudflare-propagation-seconds 20
   args:
     creates: /etc/letsencrypt/live/{{ doh_domain }}/fullchain.pem
 
-- name: Copy Dnsmask config
+- name: Copy Dnsmasq config
   ansible.builtin.template:
     src: dnsmasq.conf.j2
     dest: /etc/dnsmasq.conf
@@ -99,12 +99,12 @@
 
 - name: Enable Nginx site (symlink)
   ansible.builtin.file:
-    src: /etc/nginx/sites-avaible/{{ doh_domain }}
+    src: /etc/nginx/sites-available/{{ doh_domain }}
     dest: /etc/nginx/sites-enabled/{{ doh_domain }}
     state: link
   notify: restart nginx
 
-- name: Allow HTTP and HTTPS in UFW
+- name: Allow HTTP, HTTPS and DNS in UFW
   community.general.ufw:
     rule: allow
     port: "{{ item }}"
