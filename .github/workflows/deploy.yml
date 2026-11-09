@@ -34,4 +34,4 @@ jobs:
           
       - name: Run Ansible Playbook
         run: |
-          ansible-playbook -i inventory.ini playbook.yml -e "cloudflare_token=${{ secrets.CF_API_TOKEN }}" doh_domain=${{ secrets.DOH_DOMAIN }}"
+          ansible-playbook -i inventory.ini playbook.yml -e "cloudflare_token=${{ secrets.CF_API_TOKEN }} doh_domain=${{ secrets.DOH_DOMAIN }}"
