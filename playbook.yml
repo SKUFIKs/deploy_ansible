@@ -4,3 +4,9 @@
   become: yes
   roles:
     - base
+
+- name: Installation and configuration of DoH
+  hosts: ge
+  become: yes
+  roles:
+    - doh

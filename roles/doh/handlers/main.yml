@@ -1,0 +1,15 @@
+---
+- name: restart dnsmasq
+  ansible.builtin.service:
+    name: dnsmasq
+    state: restarted
+
+- name: restart doh-server
+  ansible.builtin.service:
+    name: doh-server
+    state: restarted
+
+- name: restart nginx
+  ansible.builtin.service:
+    name: nginx
+    state: restarted

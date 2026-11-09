@@ -26,7 +26,12 @@ jobs:
           echo "Host *" >> ~/.ssh/config
           echo "  StrictHostKeyChecking no" >> ~/.ssh/config
           echo "  ConnectionAttempts 3" >> ~/.ssh/config
+
+      - name: Prepare Dnsmasq Spoof List
+        run: |
+          mkdir -p roles/doh/files
+          echo "${{ secrets.DNSMASQ_SPOOF_LIST }}" > roles/doh/files/spoof.conf
           
       - name: Run Ansible Playbook
         run: |
-          ansible-playbook -i inventory.ini playbook.yml
+          ansible-playbook -i inventory.ini playbook.yml -e "cloudflare_token=${{ secrets.CF_API_TOKEN }}" doh_domain=${{ secrets.DOH_DOMAIN }}"

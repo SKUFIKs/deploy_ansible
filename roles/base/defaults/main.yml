@@ -5,5 +5,3 @@ required_packages:
   - htop
   - ufw
   - fail2ban
-
-custom_ssh_port: "2222"

@@ -1,0 +1,90 @@
+---
+- name: Install Nginx, dnsmasq and doh-server
+  ansible.builtin.apt:
+    name: 
+      - nginx
+      - dnsmasq
+      - dns-over-https
+    state: present
+    update_cache: yes
+- name: Install Certbot and Cloudflare DNS plugin
+  ansible.builtin.apt:
+    name:
+      - certbot
+      - python3-certbot-dns-cloudflare
+    state: present
+    update_cache: yes
+
+- name: Create Cloudflare credentials file
+  ansible.builtin.copy:
+    dest: /root/.secrets/cloudflare.ini
+    content: |
+      dns_cloudflare_api_token = {{ cloudflare_token }}
+    mode: '0600'
+    owner: root
+    group: root
+  check_mode: no
+
+- name: Ensure .secrets directory exists
+  ansible.builtin.file:
+    path: /root/.secrets
+    state: directory
+    mode: '0700'
+
+- name: Issue SSL certificate via DNS-01 (Only if missing)
+  ansible.builtin.command:
+    cmd: >
+      certbot certonly --dns-cloudflare 
+      --dns-cloudflare-credentials /root/.secrets/cloudflare.ini 
+      -d {{ doh_domain }} 
+      --email undermine.support@gmail.com
+      --agree-tos --non-interactive 
+      --dns-cloudflare-propagation-seconds 20
+  args:
+    creates: /etc/letsencrypt/live/{{ doh_domain }}/fullchain.pem
+
+- name: Copy Dnsmask config
+  ansible.builtin.template:
+    src: dnsmasq.conf.j2
+    dest: /etc/dnsmasq.conf
+  notify: restart dnsmasq
+
+- name: Ensure dnsmasq.d directory exists
+  ansible.builtin.file:
+    path: /etc/dnsmasq.d
+    state: directory
+
+- name: Copy secret domain spoof list
+  ansible.builtin.copy:
+    src: spoof.conf
+    dest: /etc/dnsmasq.d/spoof.conf
+  notify: restart dnsmasq
+
+- name: Copy DoH-server config
+  ansible.builtin.template:
+    src: doh-server.conf
+    dest: /etc/dns-over-https/doh-server.conf
+  notify: restart doh-server
+
+- name: Copy Nginx virtual host
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/{{ doh_domain }}
+  notify: restart ngin
+
+- name: Enable Nginx site (symlink)
+  ansible.builtin.file:
+    src: /etc/nginx/sites-avaible/{{ doh_domain }}
+    dest: /etc/nginx/sites-enabled/{{ doh_domain }}
+    state: link
+  notify: restart nginx
+
+- name: Allow HTTP and HTTPS in UFW
+  community.general.ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop: 
+    - '80'
+    - '443'
+    - '53'
