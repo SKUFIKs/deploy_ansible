@@ -1,5 +1,4 @@
 ---
----
 - name: Install Nginx, dnsmasq and build dependencies for DoH
   ansible.builtin.apt:
     name:
@@ -32,7 +31,7 @@
   ansible.builtin.file:
     path: /tmp/dns-over-https
     state: absent
-    
+
 - name: Install Certbot and Cloudflare DNS plugin
   ansible.builtin.apt:
     name:
