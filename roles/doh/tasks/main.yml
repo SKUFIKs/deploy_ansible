@@ -87,6 +87,11 @@
     dest: /etc/dnsmasq.d/spoof.conf
   notify: restart dnsmasq
 
+- name: Validate dnsmasq configuration
+  ansible.builtin.command:
+    cmd: dnsmasq --test
+  changed_when: false
+
 - name: Ensure DoH-server config directory exists
   ansible.builtin.file:
     path: /etc/dns-over-https
@@ -98,6 +103,24 @@
     src: doh-server.conf.j2
     dest: /etc/dns-over-https/doh-server.conf
   notify: restart doh-server
+
+- name: Check for legacy doh-bridge service
+  ansible.builtin.stat:
+    path: /etc/systemd/system/doh-bridge.service
+  register: doh_legacy_bridge
+
+- name: Stop and disable legacy doh-bridge service
+  ansible.builtin.systemd:
+    name: doh-bridge
+    state: stopped
+    enabled: no
+  when: doh_legacy_bridge.stat.exists
+
+- name: Enable and start doh-server
+  ansible.builtin.systemd:
+    name: doh-server
+    enabled: yes
+    state: started
 
 - name: Copy main Nginx config (stream/L4 + http)
   ansible.builtin.template:

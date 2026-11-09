@@ -1,9 +1,13 @@
-listen-address=0.0.0.0,127.0.0.1
+listen-address=0.0.0.0
 port=53
 bind-interfaces
 
 domain-needed
 bogus-priv
+
+# Use only the upstreams defined below, ignore /etc/resolv.conf
+# (it points to Tailscale MagicDNS on this host).
+no-resolv
 
 cache-size=1000
 
