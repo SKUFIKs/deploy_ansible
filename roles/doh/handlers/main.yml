@@ -1,15 +1,20 @@
 ---
+- name: reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
 - name: restart dnsmasq
-  ansible.builtin.service:
+  ansible.builtin.systemd:
     name: dnsmasq
     state: restarted
 
 - name: restart doh-server
-  ansible.builtin.service:
+  ansible.builtin.systemd:
     name: doh-server
     state: restarted
+    enabled: yes
 
 - name: restart nginx
-  ansible.builtin.service:
+  ansible.builtin.systemd:
     name: nginx
     state: restarted
