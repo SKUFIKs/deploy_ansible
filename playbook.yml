@@ -6,7 +6,9 @@
     - base
 
 - name: Installation and configuration of DoH
-  hosts: ge
+  hosts:
+    - ge
+    - sw
   become: yes
   roles:
     - doh
