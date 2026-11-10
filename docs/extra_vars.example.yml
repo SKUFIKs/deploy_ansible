@@ -26,3 +26,6 @@ sites_configs:
   - domain: xmlrpc.example.com
     template: xmlrpc.conf.j2
     backend: https://203.0.113.10:8006
+    # Optional: extra public ports on the host's default IPv4.
+    direct_ports:
+      - 8443

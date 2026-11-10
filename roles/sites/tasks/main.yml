@@ -43,6 +43,13 @@
     state: absent
   notify: restart nginx
 
+- name: Allow direct site ports in UFW
+  community.general.ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop: "{{ sites_configs | selectattr('direct_ports', 'defined') | map(attribute='direct_ports') | flatten | unique }}"
+
 - name: Validate Nginx configuration
   ansible.builtin.command:
     cmd: nginx -t

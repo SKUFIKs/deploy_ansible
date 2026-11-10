@@ -18,6 +18,9 @@ server {
 # HTTPS behind the stream/SNI gateway on 443
 server {
     listen 127.0.0.1:8443 ssl proxy_protocol;
+{% for port in item.direct_ports | default([]) %}
+    listen {{ ansible_default_ipv4.address }}:{{ port }} ssl;
+{% endfor %}
     http2 on;
     server_name {{ item.domain }};
 
