@@ -1,0 +1,24 @@
+---
+- name: Ensure systemd-resolved is enabled and running
+  ansible.builtin.systemd:
+    name: systemd-resolved
+    enabled: yes
+    state: started
+
+- name: Set DNS servers
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/resolved.conf
+    regexp: '^#?\s*DNS='
+    line: "DNS={{ dns_servers }}"
+    insertafter: '^\[Resolve\]'
+    state: present
+  notify: restart systemd-resolved
+
+- name: Set FallbackDNS servers
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/resolved.conf
+    regexp: '^#?\s*FallbackDNS='
+    line: "FallbackDNS={{ dns_fallback_servers }}"
+    insertafter: '^\[Resolve\]'
+    state: present
+  notify: restart systemd-resolved

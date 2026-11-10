@@ -1,0 +1,5 @@
+---
+# Public resolvers for servers that are not DoH gateways.
+# Values are space-separated, as expected by systemd-resolved.
+dns_servers: "1.1.1.1 8.8.8.8"
+dns_fallback_servers: "9.9.9.9 149.112.112.112"

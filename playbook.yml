@@ -18,3 +18,9 @@
   become: yes
   roles:
     - sites
+
+- name: Changing DNS servers
+  hosts: 'all:!sw:!ge'
+  become: yes
+  roles:
+    - dns
