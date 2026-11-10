@@ -4,9 +4,9 @@
 несколько сайтов за nginx.
 
 > **Это личный проект, который я делаю только в рамках обучения.**
-> Он не претендует на production-ready: конфиги упрощены, а решения
-> принимались по ходу изучения Ansible, nginx и Linux. Используй на свой
-> страх и риск.
+> Все действия выполняются на реальных серверах. Проект не претендует на
+> production-ready: конфиги упрощены, а решения принимались по ходу изучения
+> Ansible, nginx и Linux.
 
 ## Что внутри
 
@@ -32,14 +32,6 @@ docs/extra_vars.example.yml
 
 ```bash
 ansible-galaxy collection install -r requirements.yml
-
-# только проверить синтаксис
-ansible-playbook -i inventory.ini playbook.yml --syntax-check
-
-# посмотреть, что изменится, ничего не применяя
-ansible-playbook -i inventory.ini playbook.yml --check --diff --limit <host>
-
-# применить
 ansible-playbook -i inventory.ini playbook.yml --extra-vars @extra_vars.yml
 ```
 
@@ -62,10 +54,3 @@ ansible-playbook -i inventory.ini playbook.yml --extra-vars @extra_vars.yml
 
 Скрипт запускает `pre-commit` (`yamllint`, `ansible-lint`) и
 `ansible-playbook --syntax-check` в WSL.
-
-## Ограничения
-
-- Проект учебный: нет Molecule-тестов и полноценного staging.
-- Часть решений (например, stream на 443) сделана для конкретной задачи,
-  а не как универсальная схема.
-- Перед применением на живых серверах всегда смотри `--check --diff`.
