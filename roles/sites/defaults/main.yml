@@ -1,6 +1,5 @@
 ---
-sites_domains:
-  - update.undermine.click
-  - control.undermine.click
-  - mi.data.undermine.click
-  - xmlrpc.undermine.click
+# The list of sites and their backends is provided via Ansible extra vars
+# from a secret (see docs/extra_vars.example.yml). Empty by default on purpose:
+# running this role without the secret must fail loudly, not silently do nothing.
+sites_configs: []

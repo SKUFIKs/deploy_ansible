@@ -1,4 +1,15 @@
 ---
+- name: Require DoH settings from secrets
+  ansible.builtin.assert:
+    that:
+      - doh_domain is defined and doh_domain | length > 0
+      - doh_zone is defined and doh_zone | length > 0
+      - doh_secret_path is defined and doh_secret_path | length > 0
+      - doh_email is defined and doh_email | length > 0
+    fail_msg: >-
+      doh_domain, doh_zone, doh_secret_path and doh_email must be provided
+      via Ansible extra vars (see docs/extra_vars.example.yml).
+
 - name: Install Nginx, dnsmasq and build dependencies for DoH
   ansible.builtin.apt:
     name:
@@ -64,7 +75,7 @@
       certbot certonly --dns-cloudflare
       --dns-cloudflare-credentials /root/.secrets/cloudflare.ini
       -d {{ doh_domain }}
-      --email undermine.support@gmail.com
+      --email {{ doh_email }}
       --agree-tos --non-interactive
       --dns-cloudflare-propagation-seconds 20
   args:

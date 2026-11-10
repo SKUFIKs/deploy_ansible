@@ -1,4 +1,12 @@
 ---
+- name: Require sites_configs from secrets
+  ansible.builtin.assert:
+    that:
+      - sites_configs | length > 0
+    fail_msg: >-
+      sites_configs is empty. Provide domains, template names and backends
+      via Ansible extra vars (see docs/extra_vars.example.yml).
+
 - name: Ensure ACME webroot exists
   ansible.builtin.file:
     path: /var/www/certbot
@@ -9,23 +17,23 @@
 
 - name: Deploy site configurations
   ansible.builtin.template:
-    src: "{{ item }}.conf.j2"
-    dest: /etc/nginx/sites-available/{{ item }}.conf
+    src: "{{ item.template }}"
+    dest: /etc/nginx/sites-available/{{ item.domain }}.conf
     owner: root
     group: root
     mode: '0644'
-  loop: "{{ sites_domains }}"
+  loop: "{{ sites_configs }}"
   notify: restart nginx
 
 - name: Enable site configurations
   ansible.builtin.file:
-    src: /etc/nginx/sites-available/{{ item }}.conf
-    dest: /etc/nginx/sites-enabled/{{ item }}.conf
+    src: /etc/nginx/sites-available/{{ item.domain }}.conf
+    dest: /etc/nginx/sites-enabled/{{ item.domain }}.conf
     state: link
-  loop: "{{ sites_domains }}"
+  loop: "{{ sites_configs }}"
   notify: restart nginx
 
-- name: Disable legacy pterodactyl site symlink
+- name: Disable legacy site symlink
   ansible.builtin.file:
     path: /etc/nginx/sites-enabled/pterodactyl.conf
     state: absent

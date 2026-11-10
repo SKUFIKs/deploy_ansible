@@ -1,0 +1,28 @@
+---
+# Example of the ANSIBLE_EXTRA_VARS secret.
+# NEVER commit the real file: extra_vars.yml is git-ignored.
+# In CI the secret is written to extra_vars.yml and passed via --extra-vars @extra_vars.yml.
+# cloudflare_token is appended by the workflow from the CF_API_TOKEN secret.
+
+doh_domain: docs.example.com
+doh_zone: example.com
+doh_email: admin@example.com
+doh_secret_path: /api/v1/change-me
+
+sites_configs:
+  - domain: update.example.com
+    template: update.conf.j2
+    root: /var/www/update.example.com
+
+  - domain: control.example.com
+    template: control.conf.j2
+    root: /var/www/pterodactyl/public
+    php_socket: /run/php/php8.3-fpm.sock
+
+  - domain: mi.data.example.com
+    template: mi_data.conf.j2
+    backend: http://127.0.0.1:9001
+
+  - domain: xmlrpc.example.com
+    template: xmlrpc.conf.j2
+    backend: https://203.0.113.10:8006

@@ -1,2 +1,2 @@
 ---
-doh_secret_path: "/api/v1/sync"
+doh_zone: "{{ doh_domain.split('.', 1)[1] }}"

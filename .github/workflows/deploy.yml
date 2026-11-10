@@ -60,6 +60,22 @@ jobs:
           mkdir -p roles/doh/files
           echo "${{ secrets.DNSMASQ_SPOOF_LIST }}" > roles/doh/files/spoof.conf
 
+      - name: Prepare Ansible extra vars
+        env:
+          CF_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          EXTRA_VARS: ${{ secrets.ANSIBLE_EXTRA_VARS }}
+        run: |
+          umask 077
+          {
+            printf '%s\n' "$EXTRA_VARS"
+            printf 'cloudflare_token: "%s"\n' "$CF_TOKEN"
+          } > extra_vars.yml
+          chmod 600 extra_vars.yml
+
       - name: Run Ansible Playbook
         run: |
-          ansible-playbook -i inventory.ini playbook.yml -e "cloudflare_token=${{ secrets.CF_API_TOKEN }} doh_domain=${{ secrets.DOH_DOMAIN }}"
+          ansible-playbook -i inventory.ini playbook.yml --extra-vars @extra_vars.yml
+
+      - name: Remove Ansible extra vars
+        if: always()
+        run: rm -f extra_vars.yml
