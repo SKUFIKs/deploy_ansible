@@ -9,6 +9,10 @@ doh_zone: example.com
 doh_email: admin@example.com
 doh_secret_path: /api/v1/change-me
 
+# Optional overrides for the dns role.
+dns_servers: "1.1.1.1 8.8.8.8"
+dns_fallback_servers: "9.9.9.9 149.112.112.112"
+
 sites_configs:
   - domain: update.example.com
     template: update.conf.j2
