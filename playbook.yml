@@ -12,3 +12,9 @@
   become: yes
   roles:
     - doh
+
+- name: Web sites configuration
+  hosts: sw
+  become: yes
+  roles:
+    - sites

@@ -1,0 +1,37 @@
+---
+- name: Ensure ACME webroot exists
+  ansible.builtin.file:
+    path: /var/www/certbot
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Deploy site configurations
+  ansible.builtin.template:
+    src: "{{ item }}.conf.j2"
+    dest: /etc/nginx/sites-available/{{ item }}.conf
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ sites_domains }}"
+  notify: restart nginx
+
+- name: Enable site configurations
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/{{ item }}.conf
+    dest: /etc/nginx/sites-enabled/{{ item }}.conf
+    state: link
+  loop: "{{ sites_domains }}"
+  notify: restart nginx
+
+- name: Disable legacy pterodactyl site symlink
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/pterodactyl.conf
+    state: absent
+  notify: restart nginx
+
+- name: Validate Nginx configuration
+  ansible.builtin.command:
+    cmd: nginx -t
+  changed_when: false
