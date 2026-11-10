@@ -72,6 +72,16 @@ jobs:
           } > extra_vars.yml
           chmod 600 extra_vars.yml
 
+      - name: Mask sensitive values in logs
+        run: |
+          grep -E '^[[:space:]]*(-[[:space:]]+)?(doh_domain|doh_zone|doh_email|doh_secret_path|domain|backend):' extra_vars.yml \
+            | sed -E 's/^[^:]*:[[:space:]]*//; s/^"(.*)"$/\1/; s/[[:space:]]+$//' \
+            | while IFS= read -r value; do
+                if [ -n "$value" ]; then
+                  printf '::add-mask::%s\n' "$value"
+                fi
+              done
+
       - name: Run Ansible Playbook
         run: |
           ansible-playbook -i inventory.ini playbook.yml --extra-vars @extra_vars.yml
