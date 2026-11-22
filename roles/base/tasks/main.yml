@@ -47,14 +47,16 @@
   ansible.builtin.copy:
     dest: /etc/fail2ban/jail.local
     content: |
+      [DEFAULT]
+      backend = systemd
+      bantime = 3600
+      findtime = 600
+      maxretry = 3
+
       [sshd]
       enabled = true
       port = {{ custom_ssh_port }}
       filter = sshd
-      logpath = /var/log/auth.log
-      maxretry = 3
-      bantime = 3600
-      findtime = 600
     mode: '0644'
   notify: restart fail2ban
 

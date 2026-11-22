@@ -92,10 +92,49 @@
     path: /etc/dnsmasq.d
     state: directory
 
+- name: Read the local spoof list source
+  ansible.builtin.slurp:
+    src: "{{ role_path }}/files/spoof.conf"
+  delegate_to: localhost
+  become: false
+  register: doh_spoof_source
+  no_log: true
+
+- name: Check whether the spoof list source is the placeholder
+  ansible.builtin.set_fact:
+    doh_spoof_is_placeholder: >-
+      {{ 'Placeholder. In CI this file is generated' in (doh_spoof_source.content | b64decode) }}
+  no_log: true
+
+- name: Check the existing spoof list
+  ansible.builtin.stat:
+    path: /etc/dnsmasq.d/spoof.conf
+  register: doh_spoof_existing
+
+- name: Refuse to overwrite a real spoof list with the placeholder
+  ansible.builtin.assert:
+    that:
+      - not doh_spoof_is_placeholder
+        or not doh_spoof_existing.stat.exists
+        or doh_spoof_existing.stat.size < 500
+    fail_msg: >-
+      roles/doh/files/spoof.conf is the placeholder. Populate it from
+      DNSMASQ_SPOOF_LIST or domain-list.txt before running locally; refusing to
+      overwrite the existing /etc/dnsmasq.d/spoof.conf.
+
 - name: Copy secret domain spoof list
   ansible.builtin.copy:
     src: spoof.conf
     dest: /etc/dnsmasq.d/spoof.conf
+  notify: restart dnsmasq
+
+- name: Copy the GHCR resolver exception
+  ansible.builtin.copy:
+    src: ghcr-allow.conf
+    dest: /etc/dnsmasq.d/ghcr-allow.conf
+    owner: root
+    group: root
+    mode: '0644'
   notify: restart dnsmasq
 
 - name: Validate dnsmasq configuration
